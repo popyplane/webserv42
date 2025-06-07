@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 15:56:14 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/02 17:42:54 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/03 16:58:12 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <string>
 # include <fstream>
+# include <iostream>
 # include <cctype>
 # include "token.hpp"
 
@@ -23,30 +24,33 @@ bool	readFile(const std::string &fileName, std::string &out);
 class Lexer
 {
 	private:
-		const std::string&	_input;
+		const std::string&	_input;			// one-string config file
 		size_t				_pos;
-		int					_line;
-		int					_column;
-		std::vector<Token>	_tokens;
+		int					_line, _column;	// error management	
+		std::vector<token>	_tokens;
 
-		Token	nextToken();
+		token	nextToken();	// lex the next token
 		void	skipWhitespaceAndComments();
-    	Token	tokeniseIdentifier();
-    	Token	tokeniseNumber();
-    	Token	tokeniseString();
-    	Token	tokeniseSymbol();
-		Token	tokeniseModifier();
-    	char	peek() const;
-    	char	get();        // consume and return current char
-    	bool	isAtEnd() const;
+		token	tokeniseIdentifier();
+		token	tokeniseNumber();
+		token	tokeniseString();
+		token	tokeniseSymbol();
+		token	tokeniseModifier();
+		char	peek() const;	// check current char
+		char	get();			// consume and return current char
+		bool	isAtEnd() const;
 
 		void	error(const std::string& msg) const;
 
 	public:
-		Lexer(/* args */);
+		Lexer(const std::string &input);
 		~Lexer();
 
+		void	lexConf();		// loop nextToken() on _input
 		
+		// test functions
+		void	dumpTokens();
+		const std::string tokenTypeToString(tokenType type);	
 };
 
 

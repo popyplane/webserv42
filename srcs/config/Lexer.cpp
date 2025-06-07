@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 10:47:25 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/02 18:55:14 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/07 15:10:56 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,12 @@ bool    readFile(const std::string &fileName, std::string &out)
 	return true;
 }
 
+Lexer::Lexer(const std::string &input) : _input(input), _pos(0), _line(1), _column(1)
+{}
+
+Lexer::~Lexer()
+{}
+
 bool    Lexer::isAtEnd() const
 { return (_pos >= _input.size()); }
 
@@ -34,10 +40,11 @@ char	Lexer::get()
 {
 	char	c = _input[_pos++];
 
-	++_column;
 	if (c == '\n') {
 		++_line;
-		_column = 0;
+		_column = 1;
+	} else {
+		++_column;
 	}
 	return (c);
 }
@@ -58,11 +65,11 @@ void	Lexer::skipWhitespaceAndComments()
 	}
 }
 
-Token	Lexer::nextToken()
+token	Lexer::nextToken()
 {
 	skipWhitespaceAndComments();
 	if (isAtEnd())
-		return (Token(T_EOF, "", _line, _column));
+		return (token(T_EOF, "", _line, _column + 1));
 
 	char	curr = peek();
 	
@@ -80,59 +87,60 @@ Token	Lexer::nextToken()
 		return (tokeniseString());
 	
 	char	bad = get();
-	return (Token(T_ERROR, std::string("Unexpected: ") + bad, _line, _column - 1));
+	return (token(T_ERROR, std::string("Unexpected: ") + bad, _line, _column - 1));
 
 }
 
-Token	Lexer::tokeniseModifier()
+token	Lexer::tokeniseModifier()
 {
+	int		startLn = _line, startCol = _column;
 	char	c = get();
 
 	if (c == '=')						// case =
-		return (Token(T_EQ, "=", _line, _column - 1));
+		return (token(T_EQ, "=", startLn, startCol));
 	if (c == '~') {						// case ~ or ~*
 		if (peek() == '*') {
 			get();
-			return (Token(T_TILDE_STAR, "~*", _line, _column - 2));
+			return (token(T_TILDE_STAR, "~*", startLn, startCol));
 		}
-		return (Token(T_TILDE, "~", _line, _column - 1));
+		return (token(T_TILDE, "~", startLn, startCol));
 	}
 	if (c == '^') {						// case ^~
 		if (peek() == '~') {
-			get;
-			return (Token(T_CARET_TILDE, "^~", _line, _column - 2));
+			get();
+			return (token(T_CARET_TILDE, "^~", startLn, startCol));
 		}
 	}
 
 	// must never happen
-	return (Token(T_ERROR, "Invalid modifier", _line, _column - 1));
+	return (token(T_ERROR, "Invalid modifier", startLn, startCol));
 }
 
-Token	Lexer::tokeniseSymbol()
+token	Lexer::tokeniseSymbol()
 {
+	int			startLn = _line, startCol = _column;
 	char	c = get();
 
 	if (c == '{')
-		return (Token(T_LBRACE, "{", _line, _column - 1));
+		return (token(T_LBRACE, "{", startLn, startCol));
 	if (c == '}')
-		return (Token(T_RBRACE, "}", _line, _column - 1));
+		return (token(T_RBRACE, "}", startLn, startCol));
 	if (c == ';')
-		return (Token(T_SEMICOLON, ";", _line, _column - 1));
+		return (token(T_SEMICOLON, ";", startLn, startCol));
 
 	// must never happen >> if we want to handle other symbol as error
-	return Token(T_ERROR, std::string("Unknown symbol: ") + c, _line, _column - 1);		// check if we can put ("..." + c)
+	return token(T_ERROR, std::string("Unknown symbol: ") + c, startLn, startCol);		// check if we can put ("..." + c)
 }
 
-Token	Lexer::tokeniseString()
+token	Lexer::tokeniseString()
 {
+	int			startLn = _line, startCol = _column;
 	char		quote = get();
 	std::string	buffer;
-	int			backslashNb = 0;
 
 	while (!isAtEnd() && peek() != quote) {
 		if (peek() == '\\') {
 			get();
-			++backslashNb;
 			if (!isAtEnd())
 				buffer += get();
 		} else {
@@ -141,49 +149,117 @@ Token	Lexer::tokeniseString()
 	}
 	if (peek() == quote) {
 		get();
-		return (Token(T_STRING, buffer, _line, _column - buffer.size() - backslashNb - 2));
+		return (token(T_STRING, buffer, startLn, startCol));
 	}
 
 	// case where the quote is never closed
-	return (Token(T_ERROR, "Unterminated string", _line, _column - buffer.size() - backslashNb - 1));
+	return (token(T_ERROR, "Unterminated string", startLn, startCol));
 }
 
-Token	Lexer::tokeniseNumber()
+token	Lexer::tokeniseNumber()
 {
 	std::string	buffer;
+	int			startLn = _line, startCol = _column;
+
 	
-	while (!isAtEnd() && (std::isdigit(peek()) || peek() == '.' || peek() == ':'))
+	while (!isAtEnd() && (std::isdigit(peek()) || peek() == '.' || peek() == ':' || peek() == 'K' || peek() == 'M' || peek() == 'G'))
 		buffer += get();
 
-	return (Token(T_NUMBER, buffer, _line, _column - buffer.size()));
+	return (token(T_NUMBER, buffer, startLn, startCol));
 }
 
-Token Lexer::tokeniseIdentifier()
+token Lexer::tokeniseIdentifier()
 {
 	std::string buffer;
+	int			startLn = _line, startCol = _column;
 
 	while (!isAtEnd() && (std::isalnum(peek()) || peek() == '_' || peek() == '.'
 						|| peek() == '-' || peek() == ':' || peek() == '/' || peek() == '$'))
 		buffer += get();
 
-	if (buffer == "server")					return Token(T_SERVER, buffer, _line, _column - buffer.size());
-	if (buffer == "listen")					return Token(T_LISTEN, buffer, _line, _column - buffer.size());
-	if (buffer == "server_name")			return Token(T_SERVER_NAME, buffer, _line, _column - buffer.size());
-	if (buffer == "error_page")				return Token(T_ERROR_PAGE, buffer, _line, _column - buffer.size());
-	if (buffer == "client_max_body_size")	return Token(T_CLIENT_MAX_BODY, buffer, _line, _column - buffer.size());
-	if (buffer == "index")					return Token(T_INDEX, buffer, _line, _column - buffer.size());
-	if (buffer == "cgi_extension")			return Token(T_CGI_EXTENSION, buffer, _line, _column - buffer.size());
-	if (buffer == "cgi_path")				return Token(T_CGI_PATH, buffer, _line, _column - buffer.size());
-	if (buffer == "allowed_methods")		return Token(T_ALLOWED_METHODS, buffer, _line, _column - buffer.size());
-	if (buffer == "return")					return Token(T_RETURN, buffer, _line, _column - buffer.size());
-	if (buffer == "root")					return Token(T_ROOT, buffer, _line, _column - buffer.size());
-	if (buffer == "autoindex")				return Token(T_AUTOINDEX, buffer, _line, _column - buffer.size());
-	if (buffer == "upload_enabled")			return Token(T_UPLOAD_ENABLED, buffer, _line, _column - buffer.size());
-	if (buffer == "upload_store")			return Token(T_UPLOAD_STORE, buffer, _line, _column - buffer.size());
-	if (buffer == "location")				return Token(T_LOCATION, buffer, _line, _column - buffer.size());
-	if (buffer == "error_log")				return Token(T_ERROR_LOG, buffer, _line, _column - buffer.size());
+	if (buffer == "server")					return (token(T_SERVER, buffer, startLn, startCol));
+	if (buffer == "listen")					return (token(T_LISTEN, buffer, startLn, startCol));
+	if (buffer == "server_name")			return (token(T_SERVER_NAME, buffer, startLn, startCol));
+	if (buffer == "error_page")				return (token(T_ERROR_PAGE, buffer, startLn, startCol));
+	if (buffer == "client_max_body_size")	return (token(T_CLIENT_MAX_BODY, buffer, startLn, startCol));
+	if (buffer == "index")					return (token(T_INDEX, buffer, startLn, startCol));
+	if (buffer == "cgi_extension")			return (token(T_CGI_EXTENSION, buffer, startLn, startCol));
+	if (buffer == "cgi_path")				return (token(T_CGI_PATH, buffer, startLn, startCol));
+	if (buffer == "allowed_methods")		return (token(T_ALLOWED_METHODS, buffer, startLn, startCol));
+	if (buffer == "return")					return (token(T_RETURN, buffer, startLn, startCol));
+	if (buffer == "root")					return (token(T_ROOT, buffer, startLn, startCol));
+	if (buffer == "autoindex")				return (token(T_AUTOINDEX, buffer, startLn, startCol));
+	if (buffer == "upload_enabled")			return (token(T_UPLOAD_ENABLED, buffer, startLn, startCol));
+	if (buffer == "upload_store")			return (token(T_UPLOAD_STORE, buffer, startLn, startCol));
+	if (buffer == "location")				return (token(T_LOCATION, buffer, startLn, startCol));
+	if (buffer == "error_log")				return (token(T_ERROR_LOG, buffer, startLn, startCol));
 
 	// Ohter generic values
-	return Token(T_IDENTIFIER, buffer, _line, _column - buffer.size());
+	return (token(T_IDENTIFIER, buffer, startLn, startCol));
 }
 
+void	Lexer::lexConf()
+{
+	token	t = nextToken();
+
+	while (t.type != T_EOF) {
+		_tokens.push_back(t);
+		t = nextToken();
+	}
+	_tokens.push_back(t);
+}
+
+void	Lexer::dumpTokens()
+{
+	for (int i = 0; i < _tokens.size(); i++) {
+		std::cout	<< tokenTypeToString(_tokens[i].type) << " : ["
+					<< _tokens[i].value << "] "
+					<< "Ln " << _tokens[i].line
+					<< ", Col " << _tokens[i].column
+					<< std::endl;
+	}
+}
+
+const std::string Lexer::tokenTypeToString(tokenType type) {
+	switch (type) {
+		// End / errors
+		case T_EOF: return "T_EOF";
+		case T_ERROR: return "T_ERROR";
+
+		// Structure symbols
+		case T_LBRACE: return "T_LBRACE";
+		case T_RBRACE: return "T_RBRACE";
+		case T_SEMICOLON: return "T_SEMICOLON";
+
+		// Location modifiers
+		case T_EQ: return "T_EQ";
+		case T_TILDE: return "T_TILDE";
+		case T_TILDE_STAR: return "T_TILDE_STAR";
+		case T_CARET_TILDE: return "T_CARET_TILDE";
+
+		// Directives (keywords)
+		case T_SERVER: return "T_SERVER";
+		case T_LISTEN: return "T_LISTEN";
+		case T_SERVER_NAME: return "T_SERVER_NAME";
+		case T_ERROR_PAGE: return "T_ERROR_PAGE";
+		case T_CLIENT_MAX_BODY: return "T_CLIENT_MAX_BODY";
+		case T_INDEX: return "T_INDEX";
+		case T_CGI_EXTENSION: return "T_CGI_EXTENSION";
+		case T_CGI_PATH: return "T_CGI_PATH";
+		case T_ALLOWED_METHODS: return "T_ALLOWED_METHODS";
+		case T_RETURN: return "T_RETURN";
+		case T_ROOT: return "T_ROOT";
+		case T_AUTOINDEX: return "T_AUTOINDEX";
+		case T_UPLOAD_ENABLED: return "T_UPLOAD_ENABLED";
+		case T_UPLOAD_STORE: return "T_UPLOAD_STORE";
+		case T_LOCATION: return "T_LOCATION";
+		case T_ERROR_LOG: return "T_ERROR_LOG";
+
+		// Other values
+		case T_IDENTIFIER: return "T_IDENTIFIER";
+		case T_STRING: return "T_STRING";
+		case T_NUMBER: return "T_NUMBER";
+
+		default: return "UNKNOWN_TOKEN";
+	}
+}

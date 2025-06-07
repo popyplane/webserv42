@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 17:22:40 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/02 17:32:29 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/03 16:58:01 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 # include <string>
 
-enum TokenType {
+typedef enum tokenType {
 	// End / errors
 	T_EOF,				// End of file
 	T_ERROR,			// Unexpected char / word
@@ -53,17 +53,17 @@ enum TokenType {
 	// Other data/values
 	T_IDENTIFIER,			// strings/words that are not keywords specified above
 	T_STRING,				// string "..." or '...'
-	T_NUMBER				// integers (ex. "80", "10")
-};
+	T_NUMBER				// integers, ip:port ("80", "10")
+} tokenType;
 
-struct Token {
-	TokenType   type;
-	std::string text;
+typedef struct token {
+	tokenType   type;
+	std::string value;
 	int         line, column;
 
-	Token(TokenType type, std::string value, int line, int column)
-		: type(type), text(value), line(line), column(column)
+	token(tokenType type, std::string value, int line, int column)
+		: type(type), value(value), line(line), column(column)
 		{}
-};
+} token;
 
 #endif
