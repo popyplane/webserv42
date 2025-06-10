@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 15:56:14 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/03 16:58:12 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/07 19:20:12 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@
 
 bool	readFile(const std::string &fileName, std::string &out);
 
-class Lexer
-{
+class Lexer {
 	private:
 		const std::string&	_input;			// one-string config file
 		size_t				_pos;
@@ -46,11 +45,12 @@ class Lexer
 		Lexer(const std::string &input);
 		~Lexer();
 
-		void	lexConf();		// loop nextToken() on _input
-		
+		void				lexConf();		// loop nextToken() on _input
+		std::vector<token>	getTokens();
+
 		// test functions
-		void	dumpTokens();
-		const std::string tokenTypeToString(tokenType type);	
+		void				dumpTokens();
+		const std::string	tokenTypeToString(tokenType type);	
 };
 
 

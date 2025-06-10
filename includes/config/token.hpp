@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 17:22:40 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/03 16:58:01 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/09 18:31:44 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,5 +65,7 @@ typedef struct token {
 		: type(type), value(value), line(line), column(column)
 		{}
 } token;
+
+const std::string       tokenTypeToString(tokenType type);
 
 #endif
