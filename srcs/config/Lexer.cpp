@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 10:47:25 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/09 16:49:47 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/10 17:02:10 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,7 @@ void	Lexer::lexConf()
 
 void	Lexer::dumpTokens()
 {
-	for (int i = 0; i < _tokens.size(); i++) {
+	for (size_t i = 0; i < _tokens.size(); i++) {
 		std::cout	<< tokenTypeToString(_tokens[i].type) << " : ["
 					<< _tokens[i].value << "] "
 					<< "Ln " << _tokens[i].line

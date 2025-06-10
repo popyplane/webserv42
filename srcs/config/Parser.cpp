@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 16:48:56 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/10 15:51:50 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/10 16:52:02 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ token	Parser::peek(int offset = 0) const
 		
 token	Parser::consume()
 {
-	if (!isAtEnd)
+	if (!isAtEnd())
 		_current++;
 	return (_tokens[_current - 1]);
 }
@@ -91,6 +91,7 @@ std::vector<ASTnode *>	Parser::parseConfig()
 			consume();
 		}
 	}
+	return (astNodes);
 }
 		
 BlockNode *	Parser::parseServerBlock()
@@ -150,7 +151,7 @@ BlockNode *	Parser::parseLocationBlock()
 	expectToken(T_LBRACE, "location block opening");;
 
 		// loop through the scope
-	while (!isAtEnd() && !checkCurrentType(T_LBRACE)) {
+	while (!isAtEnd() && !checkCurrentType(T_RBRACE)) {
 		token	current = peek();
 
 		if (checkCurrentType(T_ALLOWED_METHODS) || checkCurrentType(T_ROOT) || checkCurrentType(T_INDEX)
@@ -201,7 +202,15 @@ std::vector<std::string>	Parser::parseArgs()
 }
 		
 std::string	Parser::parseModifier()
-{ return (isModifier(peek().type) ? peek().value : ""); }
+{ 
+	token	current = peek();
+
+	if (isModifier(current.type)) {
+		consume();
+		return (current.value);
+	}
+	return ("");
+}
 
 bool	Parser::isValidDirective(const std::string& name, const std::string& context) const
 {
