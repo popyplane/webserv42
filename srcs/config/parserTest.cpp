@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:59:34 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/10 17:01:20 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/10 17:08:00 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@
 void printAST(const std::vector<ASTnode*>& nodes, int indent = 0) {
     std::string indentStr(indent * 2, ' ');
     
-    for (const auto& node : nodes) {
+    for (std::vector<ASTnode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
+        ASTnode* node = *it;
         BlockNode* block = dynamic_cast<BlockNode*>(node);
         DirectiveNode* directive = dynamic_cast<DirectiveNode*>(node);
         
@@ -159,18 +160,18 @@ int main() {
     createTestConfigs();
     
     // Test existing config files
-    std::vector<std::string> testFiles = {
-        "configs/minimal.conf",
-        "configs/basic.conf",
-        "test_simple.conf",
-        "test_complex.conf",
-        "test_error.conf"
-    };
+    std::vector<std::string> testFiles;
+    testFiles.push_back("configs/minimal.conf");
+    testFiles.push_back("configs/basic.conf");
+    testFiles.push_back("test_simple.conf");
+    testFiles.push_back("test_complex.conf");
+    testFiles.push_back("test_error.conf");
     
     int passed = 0;
     int total = testFiles.size();
     
-    for (const auto& file : testFiles) {
+    for (std::vector<std::string>::const_iterator it = testFiles.begin(); it != testFiles.end(); ++it) {
+        const std::string& file = *it;
         if (testConfigFile(file)) {
             passed++;
             std::cout << "✓ PASSED" << std::endl;
