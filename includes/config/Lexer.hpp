@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 15:56:14 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/07 19:20:12 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/11 23:33:45 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,23 @@
 
 # include <string>
 # include <fstream>
+# include <sstream>
 # include <iostream>
 # include <cctype>
 # include "token.hpp"
 
 bool	readFile(const std::string &fileName, std::string &out);
+
+class LexerError : public std::runtime_error {
+	private:
+		int _line, _col;
+
+	public:
+		LexerError(const std::string& msg, int line, int col);
+		
+		int getLine() const;
+		int getColumn() const;
+};
 
 class Lexer {
 	private:
@@ -46,11 +58,11 @@ class Lexer {
 		~Lexer();
 
 		void				lexConf();		// loop nextToken() on _input
-		std::vector<token>	getTokens();
+		std::vector<token>	getTokens() const;
 
 		// test functions
 		void				dumpTokens();
-		const std::string	tokenTypeToString(tokenType type);	
+		//const std::string	tokenTypeToString(tokenType type);	
 };
 
 

@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 10:47:25 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/10 17:02:10 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/11 23:49:44 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,16 @@ bool    readFile(const std::string &fileName, std::string &out)
 		out += buffer + "\n";
 	return true;
 }
+
+
+LexerError::LexerError(const std::string& msg, int line, int col) : std::runtime_error(msg), _line(line), _col(col)
+{ }
+	
+int LexerError::getLine() const
+{ return (_line); }
+	
+int LexerError::getColumn() const
+{ return (_col); }
 
 Lexer::Lexer(const std::string &input) : _input(input), _pos(0), _line(1), _column(1)
 {}
@@ -83,12 +93,11 @@ token	Lexer::nextToken()
 		return (tokeniseIdentifier());
 	if (std::isdigit(curr))
 		return (tokeniseNumber());
-	if (curr == '"' || curr == '\'')
-		return (tokeniseString());
 	
-	char	bad = get();
-	return (token(T_ERROR, std::string("Unexpected: ") + bad, _line, _column - 1));
-
+	std::ostringstream oss;
+	
+	oss	<< "Unxpected char : '" << get() << "' from Lexer::nextToken()";
+	error(oss.str());
 }
 
 token	Lexer::tokeniseModifier()
@@ -220,46 +229,8 @@ void	Lexer::dumpTokens()
 	}
 }
 
-const std::string Lexer::tokenTypeToString(tokenType type) {
-	switch (type) {
-		// End / errors
-		case T_EOF: return "T_EOF";
-		case T_ERROR: return "T_ERROR";
+std::vector<token>	Lexer::getTokens() const
+{ return (_tokens); }
 
-		// Structure symbols
-		case T_LBRACE: return "T_LBRACE";
-		case T_RBRACE: return "T_RBRACE";
-		case T_SEMICOLON: return "T_SEMICOLON";
-
-		// Location modifiers
-		case T_EQ: return "T_EQ";
-		case T_TILDE: return "T_TILDE";
-		case T_TILDE_STAR: return "T_TILDE_STAR";
-		case T_CARET_TILDE: return "T_CARET_TILDE";
-
-		// Directives (keywords)
-		case T_SERVER: return "T_SERVER";
-		case T_LISTEN: return "T_LISTEN";
-		case T_SERVER_NAME: return "T_SERVER_NAME";
-		case T_ERROR_PAGE: return "T_ERROR_PAGE";
-		case T_CLIENT_MAX_BODY: return "T_CLIENT_MAX_BODY";
-		case T_INDEX: return "T_INDEX";
-		case T_CGI_EXTENSION: return "T_CGI_EXTENSION";
-		case T_CGI_PATH: return "T_CGI_PATH";
-		case T_ALLOWED_METHODS: return "T_ALLOWED_METHODS";
-		case T_RETURN: return "T_RETURN";
-		case T_ROOT: return "T_ROOT";
-		case T_AUTOINDEX: return "T_AUTOINDEX";
-		case T_UPLOAD_ENABLED: return "T_UPLOAD_ENABLED";
-		case T_UPLOAD_STORE: return "T_UPLOAD_STORE";
-		case T_LOCATION: return "T_LOCATION";
-		case T_ERROR_LOG: return "T_ERROR_LOG";
-
-		// Other values
-		case T_IDENTIFIER: return "T_IDENTIFIER";
-		case T_STRING: return "T_STRING";
-		case T_NUMBER: return "T_NUMBER";
-
-		default: return "UNKNOWN_TOKEN";
-	}
-}
+void	Lexer::error(const std::string& msg) const
+{ throw (LexerError(msg, _line, _column + 1)); }
