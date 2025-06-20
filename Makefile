@@ -20,7 +20,7 @@ TEST_OBJS = $(TEST_SRCS:.cpp=.o)
 LEXER_TEST = lexer_test
 PARSER_TEST = parser_test
 
-.PHONY: all clean test_lexer test_parser
+.PHONY: all clean fclean test_lexer test_parser
 
 all: test_lexer test_parser
 
@@ -48,8 +48,11 @@ run_tests: run_lexer run_parser
 # Clean up
 clean:
 	rm -f $(LEXER_OBJS) $(PARSER_OBJS) $(TEST_OBJS) $(CONFIGDIR)/lexerTest.o
-	rm -f $(LEXER_TEST) $(PARSER_TEST)
 	rm -f test_*.conf
+
+fclean: clean
+	rm -f $(LEXER_TEST) $(PARSER_TEST)
+
 
 # Debug version with extra flags
 debug: CXXFLAGS += -g -DDEBUG

@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/28 15:56:14 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/11 23:33:45 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/19 13:53:41 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ class Lexer {
 
 		// test functions
 		void				dumpTokens();
-		//const std::string	tokenTypeToString(tokenType type);	
+		//const std::string	tokenTypeToString(tokenType type);	// removed and added a global function
 };
 
 

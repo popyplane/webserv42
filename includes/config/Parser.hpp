@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/07 19:19:02 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/09 18:34:05 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/20 14:53:28 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ class Parser {
 		std::vector<std::string>	parseArgs();
 		std::string					parseModifier();
 
+		void						validateDirectiveArguments(DirectiveNode* directive) const;
 		bool						isValidDirective(const std::string& name, const std::string& context) const;
 		bool						isModifier(tokenType type) const;
 

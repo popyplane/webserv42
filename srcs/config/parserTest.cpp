@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:59:34 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/11 19:31:25 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/20 16:23:42 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,50 +20,9 @@
 #include <string>
 #include <stdexcept> // Required for std::exception
 
-// --- Minimal Error Classes (if not already defined in Lexer.hpp/Parser.hpp) ---
-// IMPORTANT: Ideally, these should be defined in their respective headers (Lexer.hpp, Parser.hpp)
-// and properly inherit from std::exception, and provide getLine()/getColumn() if available.
-// I'm putting them here for this test to compile, but you should move them.
-
-// Basic LexerError class
-class LexerError : public std::runtime_error {
-private:
-    int _line;
-    int _column;
-public:
-    // Constructor to capture message, line, and column
-    LexerError(const std::string& msg, int line = 0, int column = 0)
-        : std::runtime_error(msg), _line(line), _column(column) {}
-
-    // Methods to get line and column for error reporting
-    int getLine() const { return _line; }
-    int getColumn() const { return _column; }
-};
-
-// Basic ParseError class (assuming you already have this or similar)
-// If you have a more robust ParseError, keep that.
-// class ParseError : public std::runtime_error {
-// private:
-//     int _line;
-//     int _column;
-// public:
-//     // Constructor to capture message, line, and column
-//     ParseError(const std::string& msg, int line = 0, int column = 0)
-//         : std::runtime_error(msg), _line(line), _column(column) {}
-
-//     // Methods to get line and column for error reporting
-//     int getLine() const { return _line; }
-//     int getColumn() const { return _column; }
-// };
-
-// --- End of Minimal Error Classes ---
-
-
-// Helper function to print AST nodes (your existing one)
-// Make sure this is globally accessible or included from a common header
+// Helper function to print AST nodes (copied from parserTest.cpp for consistency)
 void printAST(const std::vector<ASTnode*>& nodes, int indent = 0) {
     std::string indentStr(indent * 2, ' ');
-    
     for (std::vector<ASTnode*>::const_iterator it = nodes.begin(); it != nodes.end(); ++it) {
         ASTnode* node = *it;
         BlockNode* block = dynamic_cast<BlockNode*>(node);
@@ -71,8 +30,6 @@ void printAST(const std::vector<ASTnode*>& nodes, int indent = 0) {
         
         if (block) {
             std::cout << indentStr << "Block: " << block->name << " (line " << block->line << ")" << std::endl;
-            
-            // Print block arguments (for location blocks, etc.)
             if (!block->args.empty()) {
                 std::cout << indentStr << "  Args: ";
                 for (size_t i = 0; i < block->args.size(); ++i) {
@@ -81,8 +38,6 @@ void printAST(const std::vector<ASTnode*>& nodes, int indent = 0) {
                 }
                 std::cout << std::endl;
             }
-            
-            // Recursively print children
             if (!block->children.empty()) {
                 std::cout << indentStr << "  Children:" << std::endl;
                 printAST(block->children, indent + 2);
@@ -90,7 +45,6 @@ void printAST(const std::vector<ASTnode*>& nodes, int indent = 0) {
         }
         else if (directive) {
             std::cout << indentStr << "Directive: " << directive->name << " (line " << directive->line << ")" << std::endl;
-            
             if (!directive->args.empty()) {
                 std::cout << indentStr << "  Args: ";
                 for (size_t i = 0; i < directive->args.size(); ++i) {
@@ -103,15 +57,15 @@ void printAST(const std::vector<ASTnode*>& nodes, int indent = 0) {
     }
 }
 
-// Struct to define a test case
+// Struct to define a test case (copied for consistency)
 struct TestCase {
     std::string name;
     std::string configContent;
-    bool expectedToPass; // true if syntax is valid, false if it should throw an error
-    std::string expectedErrorType; // e.g., "ParseError", "LexerError", or empty if expectedToPass
+    bool expectedToPass;
+    std::string expectedErrorType;
 };
 
-// Function to run a single test case
+// Function to run a single test case (copied for consistency)
 bool runTestCase(const TestCase& testCase) {
     std::cout << "\n=== Running Test: " << testCase.name << " ===" << std::endl;
     std::cout << "--- Config Content ---\n" << testCase.configContent << std::endl;
@@ -137,44 +91,44 @@ bool runTestCase(const TestCase& testCase) {
         parser.cleanupAST(ast);
 
         if (testCase.expectedToPass) {
-            std::cout << "\nResult: \033[32m✓ PASSED\033[0m (Expected to pass, and it did)" << std::endl; // Green text
+            std::cout << "\nResult: \033[32m✓ PASSED\033[0m (Expected to pass, and it did)" << std::endl;
             testPassed = true;
         } else {
-            std::cerr << "\nResult: \033[31m✗ FAILED\033[0m (Expected to fail with " << testCase.expectedErrorType << ", but parsing succeeded)" << std::endl; // Red text
+            std::cerr << "\nResult: \033[31m✗ FAILED\033[0m (Expected to fail with " << testCase.expectedErrorType << ", but parsing succeeded)" << std::endl;
             testPassed = false;
         }
 
-    } catch (const LexerError& e) { // Catch LexerError
+    } catch (const LexerError& e) {
         actualErrorType = "LexerError";
         std::cerr << "\nLexer Error at line " << e.getLine() << ", col " << e.getColumn() 
                   << ": " << e.what() << std::endl;
         if (!testCase.expectedToPass && testCase.expectedErrorType == actualErrorType) {
-            std::cout << "Result: \033[32m✓ PASSED\033[0m (Expected LexerError, and it occurred)" << std::endl; // Green text
+            std::cout << "Result: \033[32m✓ PASSED\033[0m (Expected LexerError, and it occurred)" << std::endl;
             testPassed = true;
         } else {
-            std::cerr << "Result: \033[31m✗ FAILED\033[0m (Unexpected LexerError)" << std::endl; // Red text
+            std::cerr << "Result: \033[31m✗ FAILED\033[0m (Unexpected LexerError)" << std::endl;
             testPassed = false;
         }
-    } catch (const ParseError& e) { // Catch ParseError
+    } catch (const ParseError& e) {
         actualErrorType = "ParseError";
         std::cerr << "\nParse Error at line " << e.getLine() << ", col " << e.getColumn() 
                   << ": " << e.what() << std::endl;
         if (!testCase.expectedToPass && testCase.expectedErrorType == actualErrorType) {
-            std::cout << "Result: \033[32m✓ PASSED\033[0m (Expected ParseError, and it occurred)" << std::endl; // Green text
+            std::cout << "Result: \033[32m✓ PASSED\033[0m (Expected ParseError, and it occurred)" << std::endl;
             testPassed = true;
         } else {
-            std::cerr << "Result: \033[31m✗ FAILED\033[0m (Unexpected ParseError)" << std::endl; // Red text
+            std::cerr << "Result: \033[31m✗ FAILED\033[0m (Unexpected ParseError)" << std::endl;
             testPassed = false;
         }
-    } catch (const std::exception& e) { // Catch other standard exceptions
+    } catch (const std::exception& e) {
         actualErrorType = "std::exception";
         std::cerr << "\nUnexpected standard exception: " << e.what() << std::endl;
-        std::cerr << "Result: \033[31m✗ FAILED\033[0m (Unexpected standard exception)" << std::endl; // Red text
+        std::cerr << "Result: \033[31m✗ FAILED\033[0m (Unexpected standard exception)" << std::endl;
         testPassed = false;
-    } catch (...) { // Catch any other unknown errors
+    } catch (...) {
         actualErrorType = "UnknownError";
         std::cerr << "\nUnknown error caught." << std::endl;
-        std::cerr << "Result: \033[31m✗ FAILED\033[0m (Unknown error)" << std::endl; // Red text
+        std::cerr << "Result: \033[31m✗ FAILED\033[0m (Unknown error)" << std::endl;
         testPassed = false;
     }
     
@@ -183,196 +137,167 @@ bool runTestCase(const TestCase& testCase) {
 
 
 int main() {
-    std::cout << "=== Comprehensive Config Parser Test Suite ===" << std::endl;
+    std::cout << "=== Comprehensive Config Parser Stress Test Suite ===" << std::endl;
 
-    // Use push_back for C++98 compatibility
     std::vector<TestCase> tests;
 
-    // --- Valid Configurations ---
-    TestCase tc1 = {"Minimal Server Block", "server {\n    listen 80;\n}\n", true, ""};
-    tests.push_back(tc1);
+    // --- Stress Test Cases ---
+
+    // 1. Many Server Blocks (e.g., 50 servers)
+    {
+        std::ostringstream oss;
+        for (int i = 0; i < 50; ++i) {
+            oss << "server {\n"
+                << "    listen " << (8000 + i) << ";\n"
+                << "    server_name host" << i << ".com;\n"
+                << "    root /var/www/host" << i << ";\n"
+                << "}\n";
+        }
+        TestCase tc = {"Many Server Blocks (" + std::to_string(50) + ")", oss.str(), true, ""};
+        tests.push_back(tc);
+    }
+
+    // 2. Deeply Nested Location Blocks (e.g., 10 levels deep)
+    {
+        std::ostringstream oss;
+        oss << "server {\n    listen 80;\n";
+        std::string current_indent = "    ";
+        for (int i = 0; i < 10; ++i) {
+            oss << current_indent << "location /level" << i << " {\n";
+            current_indent += "    ";
+            oss << current_indent << "index nested" << i << ".html;\n";
+        }
+        // Close all the nested blocks
+        for (int i = 0; i < 10; ++i) {
+            current_indent = current_indent.substr(0, current_indent.length() - 4);
+            oss << current_indent << "}\n";
+        }
+        oss << "}\n";
+        TestCase tc = {"Deeply Nested Location Blocks (10 levels)", oss.str(), true, ""};
+        tests.push_back(tc);
+    }
+
+    // 3. Server Block with Many Directives and Long Arguments
+    {
+        std::ostringstream oss;
+        oss << "server {\n"
+            << "    listen 80;\n"
+            << "    server_name very.long.server.name.example.com another.long.name.test.org;\n"
+            << "    error_page 400 401 402 403 404 405 500 502 503 504 /custom_error_pages/errors.html;\n"
+            << "    client_max_body_size 1024m;\n"
+            << "    index default.html index.php main.html;\n"
+            << "    error_log /var/log/webservice/error.log crit;\n"
+            << "    root /data/web/applications/main_application_root;\n"
+            << "    autoindex on;\n"
+            << "    location /app/files/uploads {\n"
+            << "        allowed_methods GET POST DELETE;\n"
+            << "        upload_enabled on;\n"
+            << "        upload_store /mnt/data/uploads/app_user_files;\n"
+            << "        cgi_extension .php .py .pl;\n"
+            << "        cgi_path /usr/bin/php-cgi;\n"
+            << "        return 200;\n"
+            << "    }\n"
+            << "    location = /exact/match {\n"
+            << "        return 302 /new/exact/location/page.html;\n"
+            << "    }\n"
+            << "}\n";
+        TestCase tc = {"Complex Server Block with Many Directives", oss.str(), true, ""};
+        tests.push_back(tc);
+    }
+
+    // 4. Configuration with Extensive Comments and Whitespace
+    {
+        std::ostringstream oss;
+        oss << "# Main webserv configuration file\n\n";
+        oss << "   # This is a server block\n";
+        oss << "   server   {   # Server starts here\n";
+        oss << "\n";
+        oss << "       listen   8080;   # Listen on port 8080\n";
+        oss << "\n";
+        oss << "       server_name   localhost   www.example.com;   # Define server names\n";
+        oss << "\n";
+        oss << "       # Error pages setup\n";
+        oss << "       error_page   404   /errors/404.html; \n";
+        oss << "\n";
+        oss << "       location   /images/   {   # Location for images\n";
+        oss << "           root   /var/www/images;   \n";
+        oss << "           index   default.jpg;   # Default image\n";
+        oss << "       }\n\n";
+        oss << "   }   # End of server block\n";
+        oss << "\n\n# End of file\n";
+        TestCase tc = {"Extensive Comments and Whitespace", oss.str(), true, ""};
+        tests.push_back(tc);
+    }
+
+    // 5. Malformed Nested Block (Missing brace in deep level)
+    {
+        std::ostringstream oss;
+        oss << "server {\n    listen 80;\n";
+        std::string current_indent = "    ";
+        for (int i = 0; i < 5; ++i) {
+            oss << current_indent << "location /level" << i << " {\n";
+            current_indent += "    ";
+        }
+        oss << current_indent << "index test.html;\n";
+        // One brace missing here:
+        // for (int i = 0; i < 4; ++i) { // Should be 5, but making it 4
+        //     current_indent = current_indent.substr(0, current_indent.length() - 4);
+        //     oss << current_indent << "}\n";
+        // }
+        // Force missing brace at level 4.
+        current_indent = current_indent.substr(0, current_indent.length() - 4); // Back to level 4
+        oss << current_indent << "}\n"; // Close level 4
+        current_indent = current_indent.substr(0, current_indent.length() - 4); // Back to level 3
+        oss << current_indent << "}\n"; // Close level 3
+        current_indent = current_indent.substr(0, current_indent.length() - 4); // Back to level 2
+        oss << current_indent << "}\n"; // Close level 2
+        current_indent = current_indent.substr(0, current_indent.length() - 4); // Back to level 1
+        oss << current_indent << "}\n"; // Close level 1 (but one more is needed implicitly from level 0)
+        oss << "}\n"; // This one actually closes the server block, still one missing from level 5
+        TestCase tc = {"Malformed Nested Block (Missing Brace in Deep Level)", oss.str(), false, "ParseError"};
+        tests.push_back(tc);
+    }
+
+    // 6. Directive with Extremely Long String Argument
+    {
+        std::ostringstream oss;
+        oss << "server {\n    listen 80;\n    error_log \"";
+        for (int i = 0; i < 200; ++i) { // 200 characters long string
+            oss << "a";
+        }
+        oss << ".log\" info;\n}\n";
+        TestCase tc = {"Directive with Extremely Long String Argument", oss.str(), true, ""};
+        tests.push_back(tc);
+    }
+
+    // 7. Large Number of Directives within a Single Server Block (e.g., 50 directives)
+    {
+            std::ostringstream oss;
+        oss << "server {\n    listen 80;\n";
+        for (int i = 0; i < 50; ++i) {
+            oss << "    index file" << i << ".html;\n";
+        }
+        oss << "}\n";
+        TestCase tc = {"Many Directives in Single Server Block (50)", oss.str(), true, ""};
+        tests.push_back(tc);
+    }
+
+    // 8. Invalid Directive in Location Context (Expected to fail)
+    {
+        std::ostringstream oss;
+        oss << "server {\n    listen 80;\n    location / {\n        server_name invalid.com;\n    }\n}\n";
+        TestCase tc = {"Invalid Directive in Location Context", oss.str(), false, "ParseError"};
+        tests.push_back(tc);
+    }
     
-    TestCase tc2 = {"Basic Server Block",
-            "server {\n"
-            "    listen 80;\n"
-            "    server_name example.com;\n"
-            "    root /var/www;\n"
-            "    index index.html;\n"
-            "}\n",
-            true, ""};
-    tests.push_back(tc2);
-
-    TestCase tc3 = {"Server Block with Location",
-            "server {\n"
-            "    listen 8080;\n"
-            "    location / {\n"
-            "        root /var/www/html;\n"
-            "        index index.html;\n"
-            "    }\n"
-            "}\n",
-            true, ""};
-    tests.push_back(tc3);
-
-    TestCase tc4 = {"Multiple Server Blocks",
-            "server {\n"
-            "    listen 80;\n"
-            "    server_name primary.com;\n"
-            "}\n"
-            "server {\n"
-            "    listen 443;\n"
-            "    server_name secondary.com;\n"
-            "}\n",
-            true, ""};
-    tests.push_back(tc4);
-
-    TestCase tc5 = {"Nested Location Blocks (Hypothetical, depends on your grammar)",
-            "server {\n"
-            "    location /app {\n"
-            "        root /data/app;\n"
-            "        location /app/files {\n"
-            "            allow GET;\n"
-            "        }\n"
-            "    }\n"
-            "}\n",
-            true, ""};
-    tests.push_back(tc5);
-
-    TestCase tc6 = {"Directive with multiple arguments",
-            "server {\n"
-            "    listen 127.0.0.1:8080;\n"
-            "    server_name host.com localhost;\n"
-            "    error_page 404 403 /error.html;\n"
-            "}\n",
-            true, ""};
-    tests.push_back(tc6);
-
-    TestCase tc7 = {"Empty Block",
-            "server {\n}\n",
-            true, ""};
-    tests.push_back(tc7);
-
-    TestCase tc8 = {"Comments",
-            "# This is a comment\n"
-            "server { # Another comment\n"
-            "    listen 80; # Listen on port 80\n"
-            "    # This is a directive comment\n"
-            "}\n",
-            true, ""};
-    tests.push_back(tc8);
-
-    // --- Invalid Configurations ---
-    TestCase tc9 = {"Missing Semicolon",
-            "server {\n"
-            "    listen 80\n" // Missing semicolon here
-            "    server_name example.com;\n"
-            "}\n",
-            false,
-            "ParseError"};
-    tests.push_back(tc9);
-
-    TestCase tc10 = {"Missing Opening Brace for Server",
-            "server \n" // Missing {
-            "    listen 80;\n"
-            "}\n",
-            false,
-            "ParseError"};
-    tests.push_back(tc10);
-
-    TestCase tc11 = {"Missing Closing Brace for Server",
-            "server {\n"
-            "    listen 80;\n"
-            "    server_name example.com;\n"
-            // Missing } here
-            ,
-            false,
-            "ParseError"};
-    tests.push_back(tc11);
-
-    TestCase tc12 = {"Missing Opening Brace for Location",
-            "server {\n"
-            "    listen 80;\n"
-            "    location /test\n" // Missing {
-            "        root /var/www;\n"
-            "    }\n"
-            "}\n",
-            false,
-            "ParseError"};
-    tests.push_back(tc12);
-
-    TestCase tc13 = {"Missing Closing Brace for Location",
-            "server {\n"
-            "    listen 80;\n"
-            "    location /test {\n"
-            "        root /var/www;\n"
-            // Missing } here
-            "}\n",
-            false,
-            "ParseError"};
-    tests.push_back(tc13);
-
-    TestCase tc14 = {"Unexpected Token (random word)",
-            "server {\n"
-            "    listen 80;\n"
-            "    blahblah;\n" // 'blahblah' is not a valid directive/block name
-            "}\n",
-            false,
-            "ParseError"}; // Or LexerError if 'blahblah' is not recognized as an identifier
-    tests.push_back(tc14);
-
-    TestCase tc15 = {"Directive outside of Block",
-            "listen 80;\n" // Directive outside any block
-            "server {\n"
-            "    server_name example.com;\n"
-            "}\n",
-            false,
-            "ParseError"};
-    tests.push_back(tc15);
-
-    TestCase tc16 = {"Block inside Directive",
-            "server {\n"
-            "    listen 80 {\n" // Block inside a directive
-            "        invalid;\n"
-            "    }\n"
-            "}\n",
-            false,
-            "ParseError"};
-    tests.push_back(tc16);
-
-    TestCase tc17 = {"Empty File",
-            "",
-            true, ""}; // An empty config file is often considered valid, resulting in an empty AST.
-    tests.push_back(tc17);
-
-    TestCase tc18 = {"Only Comments",
-            "# This is a comment\n"
-            " # Another comment\n",
-            true, ""}; // Only comments should parse fine as an empty AST
-    tests.push_back(tc18);
-
-    TestCase tc19 = {"Unclosed String in Arguments (Lexer error)",
-            "server {\n"
-            "    server_name \"example.com;\n" // Missing closing quote
-            "}\n",
-            false,
-            "LexerError"}; // Assuming your lexer handles unclosed strings
-    tests.push_back(tc19);
-
-    TestCase tc20 = {"Invalid Character (Lexer error)",
-            "server {\n"
-            "    listen 80;\n"
-            "    server_name `example.com;\n" // Backtick is usually invalid
-            "}\n",
-            false,
-            "LexerError"}; // Assuming your lexer handles invalid characters
-    tests.push_back(tc20);
-
-    TestCase tc21 = {"Directive with no arguments (if not allowed)",
-            "server {\n"
-            "    listen;\n" // 'listen' typically requires arguments
-            "}\n",
-            false,
-            "ParseError"}; // If your parser specifically checks for required args
-    tests.push_back(tc21);
+    // 9. Invalid Directive (Missing Required Arg) in a Large Config
+    {
+        std::ostringstream oss;
+        oss << "server {\n    listen 80;\n    server_name example.com;\n}\n"
+            << "server {\n    listen;\n    server_name secondary.com;\n}\n"; // Missing arg for listen
+        TestCase tc = {"Missing Required Arg in Large Config", oss.str(), false, "ParseError"};
+        tests.push_back(tc);
+    }
 
 
     int passedCount = 0;
@@ -384,13 +309,11 @@ int main() {
         }
     }
 
-    std::cout << "\n=== Test Suite Summary ===" << std::endl;
+    std::cout << "\n=== Stress Test Suite Summary ===" << std::endl;
     std::cout << "Total Tests: " << totalCount << std::endl;
     std::cout << "Passed:      " << passedCount << std::endl;
     std::cout << "Failed:      " << (totalCount - passedCount) << std::endl;
-    std::cout << "==========================" << std::endl;
+    std::cout << "=================================" << std::endl;
 
     return (passedCount == totalCount) ? 0 : 1;
 }
-
-

@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 10:47:25 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/11 23:49:44 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/20 16:52:57 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ token	Lexer::nextToken()
 	
 	oss	<< "Unxpected char : '" << get() << "' from Lexer::nextToken()";
 	error(oss.str());
+	return (token(T_EOF, "", -1, -1));
 }
 
 token	Lexer::tokeniseModifier()
@@ -121,8 +122,7 @@ token	Lexer::tokeniseModifier()
 		}
 	}
 
-	// must never happen
-	return (token(T_ERROR, "Invalid modifier", startLn, startCol));
+	throw (LexerError("Invalid modifier from Lexer::tokeniseModifier()", startLn, startCol));
 }
 
 token	Lexer::tokeniseSymbol()
@@ -137,8 +137,9 @@ token	Lexer::tokeniseSymbol()
 	if (c == ';')
 		return (token(T_SEMICOLON, ";", startLn, startCol));
 
-	// must never happen >> if we want to handle other symbol as error
-	return token(T_ERROR, std::string("Unknown symbol: ") + c, startLn, startCol);		// check if we can put ("..." + c)
+	std::ostringstream	oss;
+	oss << "Unexpected symbol '" << c << "' from Lexer::tokeniseSymbol().";
+	throw (LexerError(oss.str(), _line, _column + 1));
 }
 
 token	Lexer::tokeniseString()
@@ -150,8 +151,11 @@ token	Lexer::tokeniseString()
 	while (!isAtEnd() && peek() != quote) {
 		if (peek() == '\\') {
 			get();
-			if (!isAtEnd())
+			if (!isAtEnd()) {
 				buffer += get();
+			} else {
+				error("Unterminated string (escape sequence incomplete)");
+			}
 		} else {
 			buffer += get();
 		}
@@ -162,17 +166,29 @@ token	Lexer::tokeniseString()
 	}
 
 	// case where the quote is never closed
-	return (token(T_ERROR, "Unterminated string", startLn, startCol));
+	error("Unterminated string (missing closing quote)");
+	return (token(T_EOF, "", -1, -1));
 }
 
-token	Lexer::tokeniseNumber()
+token   Lexer::tokeniseNumber()
 {
-	std::string	buffer;
-	int			startLn = _line, startCol = _column;
+	std::string buffer;
+	int         startLn = _line, startCol = _column;
 
-	
-	while (!isAtEnd() && (std::isdigit(peek()) || peek() == '.' || peek() == ':' || peek() == 'K' || peek() == 'M' || peek() == 'G'))
-		buffer += get();
+	while (!isAtEnd()) {
+		char c = peek();
+		if (std::isdigit(c) || c == '.' || c == ':') {
+			buffer += get();
+		} else {
+			char lower_c = std::tolower(c); // case-insensitive units 'k', 'm', 'g'
+			if (lower_c == 'k' || lower_c == 'm' || lower_c == 'g') {
+				buffer += get(); // Consume the unit character
+				break;
+			} else {
+				break;
+			}
+		}
+	}
 
 	return (token(T_NUMBER, buffer, startLn, startCol));
 }
