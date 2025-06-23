@@ -4,22 +4,21 @@ int main(int argc, char **argv){
     if(argc < 1 || argc > 2)
     {
         //std::cerr? cout? ou autre pour etre au bon endroit en sortie -> wrong arg
-        std::cerr << "Please use correct format : ./webserv or ./webserv [config file]" << std::endl;
+        std::cerr << "please use [./webserv] or [./webserv *.conf]" << std::endl;
         return (1);
     }
     Config config;//declaration des class
     try{
-        if (argc == 1)
-            std::string fConf("default.conf");
-        else
+        if (argc == 2)
             std::string fConf(argv[1]);
+        else
+            std::string fConf("default.conf");
         config.checkConfig(fConf);//definir string puis allouer en une fois
     }
     catch (std::exception &e){
-        std::cerr << "Error in checkconfig..." << std::endl;
+        std::cerr << "Config error occured, plese check if your file is good!" << std::endl;
         return (1);
     }
-    config.printConfig();//A voir si utile
     Server server(&config);
     try {
         server.run();//boucle principale
@@ -27,7 +26,6 @@ int main(int argc, char **argv){
     catch (std::exception &e){
         std::cerr << "Webserv off" << std::endl;
     }
-
     return (0);
 }
 //     try{

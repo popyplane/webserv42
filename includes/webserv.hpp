@@ -6,11 +6,10 @@
 // Classes
 # include "Config.hpp"
 # include "Server.hpp"
-// # include "Socket.hpp"
-// # include "Connection.hpp"
-
-// Structs
-
-// Prototypes
+# include "divers.hpp"
+# include "Request.hpp"
+# include "Response.hpp"
+# include "Uri.hpp"
+# include "Socket.hpp"
 
 #endif
