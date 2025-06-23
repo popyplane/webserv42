@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/27 15:57:55 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/05/28 15:57:44 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/21 10:25:47 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,17 @@
 class ASTnode {
 	public :
 		virtual ~ASTnode() {}
+		ASTnode() : line(0), column(0) {}
+
+		int	line, column;
 };
 
 class DirectiveNode : public ASTnode {
 	public :
 		std::string					name;
 		std::vector<std::string>	args;
-		int							line;
+
+		DirectiveNode() : ASTnode() {}
 };
 
 class BlockNode : public ASTnode {
@@ -33,7 +37,8 @@ class BlockNode : public ASTnode {
 		std::string					name;
 		std::vector<std::string>	args;
 		std::vector<ASTnode*>		children;
-		int							line;
+
+		BlockNode() : ASTnode() {}
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 18:30:46 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/09 18:31:20 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/22 15:58:36 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ const std::string       tokenTypeToString(tokenType type)
 	switch (type) {
 		// End / errors
 		case T_EOF: return "T_EOF";
-		case T_ERROR: return "T_ERROR";
+		// case T_ERROR: return "T_ERROR";
 
 		// Structure symbols
 		case T_LBRACE: return "T_LBRACE";
@@ -25,10 +25,10 @@ const std::string       tokenTypeToString(tokenType type)
 		case T_SEMICOLON: return "T_SEMICOLON";
 
 		// Location modifiers
-		case T_EQ: return "T_EQ";
-		case T_TILDE: return "T_TILDE";
-		case T_TILDE_STAR: return "T_TILDE_STAR";
-		case T_CARET_TILDE: return "T_CARET_TILDE";
+		// case T_EQ: return "T_EQ";
+		// case T_TILDE: return "T_TILDE";
+		// case T_TILDE_STAR: return "T_TILDE_STAR";
+		// case T_CARET_TILDE: return "T_CARET_TILDE";
 
 		// Directives (keywords)
 		case T_SERVER: return "T_SERVER";

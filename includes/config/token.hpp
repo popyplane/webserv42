@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 17:22:40 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/09 18:31:44 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/22 15:56:59 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 typedef enum tokenType {
 	// End / errors
 	T_EOF,				// End of file
-	T_ERROR,			// Unexpected char / word
+	// T_ERROR,			// Unexpected char / word
 
 	// Structure symbols
 	T_LBRACE,				// '{'
@@ -27,10 +27,10 @@ typedef enum tokenType {
 	T_SEMICOLON,			// ';'
 
 	// Location modifiers
-	T_EQ,					// '='
-	T_TILDE,				// '~'
-	T_TILDE_STAR,			// '~*'
-	T_CARET_TILDE,			// '^~'
+	// T_EQ,					// '='
+	// T_TILDE,				// '~'
+	// T_TILDE_STAR,			// '~*'
+	// T_CARET_TILDE,			// '^~'
 
 	// Directives (keywords)
 	T_SERVER,				// "server"

@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 17:41:50 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/20 17:41:52 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/21 11:59:31 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,15 @@ struct LocationConfig {
 	// Nested locations (if your grammar allows and server logic supports)
 	// Justification: For hierarchical configuration, allows specific rules for sub-paths.
 	std::vector<LocationConfig> nestedLocations;
+
+    // --- NEW: Inherited from server for overriding ---
+    // Subject Requirement: "Setup des pages d'erreur par défaut." (can be overridden in locations)
+    // Justification: Allows location-specific custom error pages.
+    std::map<int, std::string>  errorPages;
+
+    // Subject Requirement: "Limiter la taille du body des clients." (can be overridden in locations)
+    // Justification: Allows location-specific client body size limits.
+    long                        clientMaxBodySize; // Stored in bytes
 
 	// Constructor to set sensible defaults
 	LocationConfig() : root(""), autoindex(false), uploadEnabled(false), uploadStore(""),
