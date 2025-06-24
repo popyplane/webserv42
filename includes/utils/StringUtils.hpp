@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 15:27:27 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/21 15:27:37 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/24 14:47:14 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ namespace StringUtils {
     // Trims leading and trailing whitespace from a string.
     // Whitespace characters include space, tab, newline, carriage return, form feed, vertical tab.
     // Example: "  hello world  \n" -> "hello world"
-    std::string trim(const std::string& str);
+    void trim(std::string& s);
+
+    void toLower(std::string& str);
 
     // Splits a string into a vector of substrings based on a single character delimiter.
     // Empty tokens are included if two delimiters are adjacent (e.g., "a,,b" split by ',' yields {"a", "", "b"}).
