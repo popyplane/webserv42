@@ -1,6 +1,4 @@
-#include "Connection.hpp"
-#include "divers.hpp"
-#include <typeinfo>
+#include "../../includes/server/Connection.hpp"
 
 Connection::Connection() {
 }
@@ -78,7 +76,7 @@ std::string Connection::getRawResponse(void) {
             delete it->second;
             requestResponseList.erase(it);//la paire est enlevee de la liste
         }
-        else if (req->isFullyParsed()) {
+        else if (req->isFullyParsed()) {//with enum (+ pratique), modif par map/vector possible
             try {
                 if (req->getRequestMethod() == GET)
                     it->second = new GetResponse(getServerBlock());

@@ -1,4 +1,4 @@
-#include "Uri.hpp"
+#include "../../includes/server/Uri.hpp"
 
 Uri::Uri() {
 }

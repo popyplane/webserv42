@@ -1,9 +1,9 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-# include "webserv.hpp"
+# include "../webserv.hpp"
 # include "Socket.hpp"
-# include <poll.h>
+
 class Server
 {
 private://ne doit pas etre lancé sans parametre

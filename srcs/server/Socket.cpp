@@ -1,4 +1,4 @@
-#include "Socket.hpp"
+#include "../../includes/server/Socket.hpp"
 
 // Constructors
 Socket::Socket() {
@@ -104,7 +104,7 @@ int		Socket::getSocketFD(void) {
 	return (this->_sockfd);
 }
 
-ServerStructures*    Socket::getServerBlock(void) {
+ServerConfig*    Socket::getServerBlock(void) {
     return (_server_block);
 }
 
@@ -118,6 +118,6 @@ void    Socket::setPortFD(std::string port) {
     this->_port = port;
 }
 
-void    Socket::setServerBlock(ServerStructures* sb) {
+void    Socket::setServerBlock(ServerConfig* sb) {
     this->_server_block = sb;
 }

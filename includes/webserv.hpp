@@ -5,11 +5,12 @@
 
 // Classes
 # include "Config.hpp"
-# include "Server.hpp"
-# include "divers.hpp"
+# include "server/Server.hpp"
+# include "server/divers.hpp"
 # include "Request.hpp"
 # include "Response.hpp"
-# include "Uri.hpp"
-# include "Socket.hpp"
+# include "server/Uri.hpp"
+# include "server/Socket.hpp"
+# include "Connection.hpp"
 
 #endif
