@@ -15,7 +15,7 @@ private://ne doit pas etre lancé sans parametre
 	int					        _fd_n;
 	int					        _fd_max;
 	struct pollfd   	    	*_pfds;
-	Config*						_config;
+	ServerConfig*						_config;
     std::map<int, Connection*>  _connections;
 
 
@@ -24,7 +24,7 @@ private://ne doit pas etre lancé sans parametre
 
 
 public:
-    Server(Config *conf);
+    Server(ServerConfig *config);
     virtual ~Server();
 
     //methode principale

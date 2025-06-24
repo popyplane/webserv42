@@ -2,7 +2,7 @@
 # define SOCKET_HPP
 
 # include "divers.hpp"
-# include "congif serveur detail"
+# include "ServerStructures.hpp"
 
 class Socket {
 	private:
@@ -10,7 +10,7 @@ class Socket {
 		socklen_t				_sin_size;
 		struct sockaddr_storage	_addr;
         std::string             _port;
-        ServerBlock*            _server_block;
+        ServerStruct*            _server_block;
 
 	public:
 		// Constructors
@@ -30,11 +30,11 @@ class Socket {
 
 		int		        getSocketFD(void);
         int             getPort(void);
-        ServerBlock*    getServerBlock(void);
+        ServerStruct*    getServerBlock(void);
 
         void    setSocketFD(int fd);
         void    setPortFD(std::string port);
-        void    setServerBlock(ServerBlock* sb);
+        void    setServerBlock(ServerStruct* sb);
 };
 
 #endif

@@ -1,18 +1,17 @@
 #include "Server.hpp"
 
-Server::Server(Config* conf) {
+Server::Server(ServerConfig* config) {
     this->_fd_n = 0;
 	this->_fd_max = MAXEVENTS;
 	_pfds = new pollfd[_fd_max];
 
-    _config = conf;
+    _config = config;
     // Initialize the listening ports from the config
     int i = 0;
-    for (std::vector<ServerBlock*>::iterator it = _config->_server_blocks.begin(); it != _config->_server_blocks.end(); ++it) {
+    for (std::vector<ServerConfig*>::iterator it = _config->_server_blocks.begin(); it != _config->_server_blocks.end(); ++it) {
         std::cout << "- launching a server on port " << (*it)->getListeningPort();
         std::cout << " at pfds[" << i << "]" << std::endl;
         // Add a listening socket to the list
-        // TODO: memory clean
         Socket* listenSock = new Socket;
         listenSock->setPortFD((*it)->getListeningPort());
         // Add relevant serverblock to listening socket!
