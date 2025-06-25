@@ -1,5 +1,6 @@
 #include "../../includes/server/Server.hpp"
 
+//constructeur des serveurs 
 Server::Server(GlobalConfig* config) {
     this->_fd_n = 0;
 	this->_fd_max = MAXEVENTS;
@@ -40,6 +41,8 @@ Server::Server(GlobalConfig* config) {
     //     std::cout << std::endl;
     // }// a faire a chat gpt
 
+
+//destructeur server(propre)
 Server::~Server() {
     delete[] _pfds;
     std::map<int, Connection*>::iterator it;
@@ -50,6 +53,9 @@ Server::~Server() {
     }
 }
 
+//boucle principale : poll surveille chaque fd pour gerer les flux dispo
+//sans attendre un temps indeterminé : pas besoin de thread
+//pour chaque fd le stock dans revents
 void Server::run(void){
     int nbPollOpen;
     while (1)
@@ -77,6 +83,7 @@ void Server::run(void){
     }
 }
 
+//close socket connection avec client
 void	Server::closeConect(int i) {
     _connections[_pfds[i].fd]->closeSocket();
     std::map<int, Connection*>::iterator it = _connections.find(_pfds[i].fd);
@@ -91,15 +98,17 @@ void	Server::closeConect(int i) {
     std::cout << "Socket Close Succelly" << std::endl;
 }
 
+//compare chaque fd au socket actuel, et renvoie le lien si il trouve 
 Socket*    Server::checkListen(int fd) {
     for (std::vector<Socket*>::iterator it = _listenSockets.begin(); it != _listenSockets.end(); it++){
         if (fd == (*it)->getSocketFD())
             return (*it) ;
     }
-    return (NULL);//compare chaque fd au socket actuel, et renvoie le lien si il trouve 
+    return (NULL);
 }
 
-void	Server::makeNewConect(Socket* listenSock) {// a retrazvailler
+//ouvre une nouvelle connexion sur un socket dispo et un port associé
+void	Server::makeNewConect(Socket* listenSock) {
 	socklen_t				addrlen;
 	struct sockaddr_storage	remote_addr;
 	char					remoteIP[INET_ADDRSTRLEN];
@@ -118,6 +127,7 @@ void	Server::makeNewConect(Socket* listenSock) {// a retrazvailler
     std::cout << " over port " << new_connection->getServerBlock()->getListeningPort() << std::endl;
 }
 
+//gère la lecture des données de la connexion
 void	Server::readConect(int i) {// A modif en try catch
 	int	    n;
 	char    str[BUFF_SIZE];
@@ -139,6 +149,7 @@ void	Server::readConect(int i) {// A modif en try catch
 	}
 }
 
+//gere les reponses, a voir avec ta partie puisque de base se basait sur une srtuct perso
 void    Server::manageRespond(int i) {
     std::string     str;
 
@@ -171,6 +182,7 @@ void    Server::manageRespond(int i) {
     }//try catch possible pour amelio
 }
 
+//add des connexion socket
 void	Server::addConect(int newfd, Connection* new_conn) {
 	if (_fd_n == _fd_max)
 	{

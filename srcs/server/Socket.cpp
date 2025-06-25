@@ -1,6 +1,5 @@
 #include "../../includes/server/Socket.hpp"
 
-// Constructors
 Socket::Socket() {
 }
 
@@ -18,6 +17,7 @@ Socket& Socket::operator=(const Socket	&src) {
 	return (*this);
 }
 
+//recup methode d'adrewsage ip
 static void	*get_in_addr(struct sockaddr *sa)
 {
 	if (sa->sa_family == AF_INET)
@@ -25,6 +25,7 @@ static void	*get_in_addr(struct sockaddr *sa)
 	return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }//savoir quelle methode ip est utilisee
 
+//creation de socket unitaire : prepare le point de com
 void	Socket::createSocket(int ai_family, int ai_socktype, int ai_protocol) {
 	int yes = 1;
 
@@ -34,22 +35,27 @@ void	Socket::createSocket(int ai_family, int ai_socktype, int ai_protocol) {
 		throw ("error with socket opt");
 }
 
+//lie socket et addrIP/port : pour que serv ecoute port 8080 a ip 2.2.2.2 :
+// lie le socket a ses port d'entrees des donnees (etabli le chemin d'acces au socket)
 void	Socket::bindSocket(struct sockaddr* ai_addr, socklen_t ai_addrlen) {
 	if (bind(_sockfd, ai_addr, ai_addrlen) < 0)
 		throw ("error with socket bind");
 }
 
+//socket allumé : prete a accepter des connexion
 void	Socket::listenOnSocket(void) {
 	if (listen(_sockfd, BACKLOG) < 0)
 		throw ("error with listen socket");
 	std::cout << "listen socket : " << _sockfd << std::endl;
 }
 
+//accpeter les connexion entrantes via le socket
 void	Socket::acceptConnection(int listenSock) {
 	if ((_sockfd = accept(listenSock, (struct sockaddr*)&_addr, &_sin_size)) < 0)
 		throw ("error with accept socket");
 }
 
+//afficher sure la console que le server a accepté une connection precise
 void	Socket::printConnection(void) {
 	char s[INET6_ADDRSTRLEN];
 
@@ -57,6 +63,7 @@ void	Socket::printConnection(void) {
 	std::cout << "server received connection from: " << s << std::endl;
 }
 
+//Fct gestion d'activation de socket
 void	Socket::initListenSocket(const char* port) {
 	struct addrinfo	base;
 	struct addrinfo	*ai;
@@ -91,6 +98,7 @@ void	Socket::initListenSocket(const char* port) {
 	listenOnSocket();
 }
 
+//fermeture propre d'un socket
 void    Socket::closeSocket(void) {
     int n;
 
