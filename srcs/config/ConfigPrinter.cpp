@@ -2,6 +2,7 @@
 #include <algorithm> // For std::transform
 #include <cctype>    // For std::tolower
 #include <iomanip>   // For std::fixed, std::setprecision (optional)
+#include "../../includes/http/HttpRequest.hpp" // for httpMethodToString()
 
 namespace ConfigPrinter {
 
@@ -15,19 +16,19 @@ namespace ConfigPrinter {
     }
 
     // Helper to convert HttpMethod enum to string for display
-    std::string httpMethodToString(HttpMethod method) {
-        switch (method) {
-            case GET_METHOD: return "GET";
-            case POST_METHOD: return "POST";
-            case DELETE_METHOD: return "DELETE";
-            // Add other methods if you enabled them in HttpMethod enum
-            // case PUT_METHOD: return "PUT";
-            // case HEAD_METHOD: return "HEAD";
-            // case OPTIONS_METHOD: return "OPTIONS";
-            case UNKNOWN_METHOD: return "UNKNOWN";
-            default: return "INVALID_METHOD";
-        }
-    }
+    // std::string httpMethodToString(HttpMethod method) {
+    //     switch (method) {
+    //         case HTTP_GET: return "GET";
+    //         case HTTP_POST: return "POST";
+    //         case HTTP_DELETE: return "DELETE";
+    //         // Add other methods if you enabled them in HttpMethod enum
+    //         // case PUT_METHOD: return "PUT";
+    //         // case HEAD_METHOD: return "HEAD";
+    //         // case OPTIONS_METHOD: return "OPTIONS";
+    //         case HTTP_UNKNOWN: return "UNKNOWN";
+    //         default: return "INVALID_METHOD";
+    //     }
+    // }
 
     // Helper to convert LogLevel enum to string for display
     std::string logLevelToString(LogLevel level) {

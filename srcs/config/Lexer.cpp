@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/02 10:47:25 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/22 15:55:16 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/25 08:53:13 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int LexerError::getColumn() const
 { return (_col); }
 
 Lexer::Lexer(const std::string &input) : _input(input), _pos(0), _line(1), _column(1)
-{}
+{ lexConf(); }
 
 Lexer::~Lexer()
 {}

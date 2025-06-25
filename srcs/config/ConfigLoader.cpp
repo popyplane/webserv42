@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 11:22:17 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/23 11:27:11 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/24 23:20:32 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -966,9 +966,9 @@ void ConfigLoader::handleReturnDirective(const DirectiveNode* directive, Locatio
  * @throws std::invalid_argument if the method string is not a recognized HTTP method.
  */
 HttpMethod ConfigLoader::stringToHttpMethod(const std::string& methodStr) const {
-	if (methodStr == "GET") return GET_METHOD;
-	if (methodStr == "POST") return POST_METHOD;
-	if (methodStr == "DELETE") return DELETE_METHOD;
+	if (methodStr == "GET") return HTTP_GET;
+	if (methodStr == "POST") return HTTP_POST;
+	if (methodStr == "DELETE") return HTTP_DELETE;
 	// Add other methods if your server supports them beyond the minimum requirement.
 	// if (methodStr == "PUT") return PUT_METHOD;
 	// if (methodStr == "HEAD") return HEAD_METHOD;

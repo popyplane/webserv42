@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/07 19:19:02 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/22 15:57:35 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/24 23:08:05 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ class Parser {
         ~Parser();
     
         // main function
-        std::vector<ASTnode*> parse();
+        std::vector<ASTnode *> parse();
     
         // cleanup
         void cleanupAST(std::vector<ASTnode*>& nodes);

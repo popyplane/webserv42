@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/20 17:41:50 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/21 11:59:31 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/24 23:18:06 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,20 @@
 #include <map>
 #include <stdexcept>
 
+#include "../http/HttpRequest.hpp" // for httpmethod enum
+
 // --- Helper Enums / Types ---
 
 // Enum for HTTP Methods, for type safety beyond just strings
-enum HttpMethod {
-	GET_METHOD,
-	POST_METHOD,
-	DELETE_METHOD,
-	// PUT_METHOD, // creating/updating files
-	// HEAD_METHOD, // request ressource's header : good practice
-	// OPTIONS_METHOD, // describing communication options : good practice
-	UNKNOWN_METHOD
-};
+// enum HttpMethod {
+// 	GET_METHOD,
+// 	POST_METHOD,
+// 	DELETE_METHOD,
+// 	// PUT_METHOD, // creating/updating files
+// 	// HEAD_METHOD, // request ressource's header : good practice
+// 	// OPTIONS_METHOD, // describing communication options : good practice
+// 	UNKNOWN_METHOD
+// };
 
 // Enum for log levels
 enum LogLevel {

@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 15:27:27 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/24 14:47:14 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/25 14:02:33 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,11 @@ namespace StringUtils {
     // - Does not handle overflow/underflow for extremely large numbers (beyond long limits in C++98).
     // Example: "123" -> 123L, "-45" -> -45L, "abc" -> throws
     long stringToLong(const std::string& str);
+
+    bool startsWith(const std::string& str, const std::string& prefix);
+
+    bool endsWith(const std::string& str, const std::string& suffix);
+
 
 } // namespace StringUtils
 
