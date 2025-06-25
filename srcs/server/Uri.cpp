@@ -6,11 +6,11 @@ Uri::Uri() {
 Uri::~Uri() {
 }
 
-std::string&    Uri::getPath(void) {
+std::string &Uri::getPath(void) {
     return (_path);
 }   
 
-std::string&    Uri::getQuery(void) {
+std::string &Uri::getQuery(void) {
     return (_query);
 }  
 

@@ -7,12 +7,12 @@ Socket::Socket() {
 Socket::~Socket() {
 }
 
-Socket::Socket(const Socket& cpy) {
+Socket::Socket(const Socket	&cpy) {
 	this->_sockfd = cpy._sockfd;
 	this->_sin_size = cpy._sin_size;
 }
 
-Socket& Socket::operator=(const Socket& src) {
+Socket& Socket::operator=(const Socket	&src) {
 	this->_sockfd = src._sockfd;
 	this->_sin_size = src._sin_size;
 	return (*this);

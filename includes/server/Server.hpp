@@ -31,12 +31,12 @@ public:
     void run();
 
     //methodes associees
-    void	dropConnection(int i);
-    Socket*    retrieveListeningSocket(int fd);
-    void	handleNewConnection(Socket* listenSock);
-    void	readFromExistingConnection(int i);
-    void    respondToExistingConnection(int i);
-    void	addConnection(int newfd, Connection* new_conn);
+    void	closeConect(int i);
+    Socket*    checkListen(int fd);
+    void	makeNewConect(Socket* listenSock);
+    void	readConect(int i);
+    void    manageRespond(int i);
+    void	addConect(int newfd, Connection* new_conn);
     void*	get_in_addr(struct sockaddr *sa);
 };
 

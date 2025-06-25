@@ -46,24 +46,24 @@ void Server::run(void){
         for(int i = 0; i < _fd_n; i++)
         {
             if (_pfds[i].revents & POLLHUP)
-                dropConnection(i);
+                closeConect(i);
             else if (_pfds[i].revents & POLLIN)
             {//si trouve un socket d'ecoute, ca veux dire que c'est un debut d'ecoute
-                Socket* listenSock = retrieveListeningSocket(_pfds[i].fd);
-                if (listenSock != NULL)
+                Socket* socket = checkListen(_pfds[i].fd);
+                if (socket != NULL)
                 {
-					handleNewConnection(listenSock);
+					makeNewConect(socket);
                     break ;
                 }//else//si pas de socket trouve, ca veux dire que c'est en cours sans doute
-				readFromExistingConnection(i);
+				readConect(i);
             }//simplifiable fort
             else if (_pfds[i].revents & POLLOUT)
-                respondToExistingConnection(i);
+                manageRespond(i);
         }
     }
 }
 
-void	Server::dropConnection(int i) {
+void	Server::closeConect(int i) {
     _connections[_pfds[i].fd]->closeSocket();
     std::map<int, Connection*>::iterator it = _connections.find(_pfds[i].fd);
     if (it != _connections.end())//check pas la fin de la map
@@ -77,7 +77,7 @@ void	Server::dropConnection(int i) {
     std::cout << "Socket Close Succelly" << std::endl;
 }
 
-Socket*    Server::retrieveListeningSocket(int fd) {
+Socket*    Server::checkListen(int fd) {
     for (std::vector<Socket*>::iterator it = _listenSockets.begin(); it != _listenSockets.end(); it++){
         if (fd == (*it)->getSocketFD())
             return (*it) ;
@@ -85,7 +85,7 @@ Socket*    Server::retrieveListeningSocket(int fd) {
     return (NULL);//compare chaque fd au socket actuel, et renvoie le lien si il trouve 
 }
 
-void	Server::handleNewConnection(Socket* listenSock) {// a retrazvailler
+void	Server::makeNewConect(Socket* listenSock) {// a retrazvailler
 	socklen_t				addrlen;
 	struct sockaddr_storage	remote_addr;
 	char					remoteIP[INET_ADDRSTRLEN];
@@ -98,13 +98,13 @@ void	Server::handleNewConnection(Socket* listenSock) {// a retrazvailler
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
-    addConnection(new_connection->getSocketFD(), new_connection);	// add connection to list of existing connections in pfds
+    addConect(new_connection->getSocketFD(), new_connection);	// add connection to list of existing connections in pfds
 	std::cout << "New connexion " << inet_ntop(remote_addr.ss_family, get_in_addr((struct sockaddr*)&remote_addr), remoteIP, INET_ADDRSTRLEN);
 	std::cout << " on socket " << new_connection->getSocketFD();
     std::cout << " over port " << new_connection->getServerBlock()->getListeningPort() << std::endl;
 }
 
-void	Server::readFromExistingConnection(int i) {// A modif en try catch
+void	Server::readConect(int i) {// A modif en try catch
 	int	    n;
 	char    str[BUFF_SIZE];
 
@@ -115,8 +115,8 @@ void	Server::readFromExistingConnection(int i) {// A modif en try catch
 		if (n == 0)// pas d'erreur : co fermee par le client
 			std::cout << "Socket closed : " << _connections[_pfds[i].fd]->getSocketFD() << std::endl;
 		else if (n < 0)//erreur
-            dropConnection(i);
-		dropConnection(i);// repetition pas forcement nessessaire
+            closeConect(i);
+		closeConect(i);// repetition pas forcement nessessaire
 	}
 	else
 	{
@@ -125,7 +125,7 @@ void	Server::readFromExistingConnection(int i) {// A modif en try catch
 	}
 }
 
-void    Server::respondToExistingConnection(int i) {
+void    Server::manageRespond(int i) {
     std::string     str;
 
     try {
@@ -147,17 +147,17 @@ void    Server::respondToExistingConnection(int i) {
 		)
     {
         std::cout << "End connect" << std::endl;
-        dropConnection(i);
+        closeConect(i);
     }// permet de ne traiter que les reponses attendues
     delete[] buffer;
     if (bytes_sent <= 0)
     {
         std::cerr << "error with send for respond..." << std::endl;
-        dropConnection(i);
+        closeConect(i);
     }//try catch possible pour amelio
 }
 
-void	Server::addConnection(int newfd, Connection* new_conn) {
+void	Server::addConect(int newfd, Connection* new_conn) {
 	if (_fd_n == _fd_max)
 	{
 		_fd_max *= 2;// pour reallouer exponotiellement et s'adapter au besoin

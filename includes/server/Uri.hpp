@@ -11,8 +11,8 @@ class Uri {
     public:
         Uri();
 		virtual ~Uri();  
-        std::string&    getPath(void);    
-        std::string&    getQuery(void);    
+        std::string &getPath(void);    
+        std::string &getQuery(void);    
         void    setPath(std::string path); 
         void    setQuery(std::string query);
 };
