@@ -1,30 +1,44 @@
 #include "../../includes/server/Server.hpp"
 
-Server::Server(ServerConfig* config) {
+Server::Server(GlobalConfig* config) {
     this->_fd_n = 0;
 	this->_fd_max = MAXEVENTS;
 	_pfds = new pollfd[_fd_max];
-
     _config = config;
-    // Initialize the listening ports from the config
-    int i = 0;
-    for (std::vector<ServerConfig*>::iterator it = _config->_server_blocks.begin(); it != _config->_server_blocks.end(); ++it) {
-        std::cout << "- launching a server on port " << (*it)->getListeningPort();
+    int i = 0;//nb serv
+
+    for (std::vector<ServerConfig>::iterator it = servers.begin(); it != servers.end(); ++it) {
+        std::cout << "- launching a server on port " << (*it)->port;
         std::cout << " at pfds[" << i << "]" << std::endl;
-        // Add a listening socket to the list
         Socket* listenSock = new Socket;
-        listenSock->setPortFD((*it)->getListeningPort());
-        // Add relevant serverblock to listening socket!
+        listenSock->setPortFD((*it)->port);
         listenSock->setServerBlock(*it);
         _listenSockets.push_back(listenSock);
-      	_listenSockets.back()->initListenSocket((*it)->getListeningPort().c_str());
+      	_listenSockets.back()->initListenSocket((*it)->port.c_str());
     	_pfds[i].fd = _listenSockets.back()->getSocketFD();
 	    _pfds[i].events = POLLIN | POLLOUT;
 	    _fd_n++;
         i++;
         std::cout << std::endl;
-    }// a faire a chat gpt
+    }
 }
+
+    // for (std::vector<GlobalConfig*>::iterator it = _config->_server_blocks.begin(); it != _config->_server_blocks.end(); ++it) {
+    //     std::cout << "- launching a server on port " << (*it)->port;
+    //     std::cout << " at pfds[" << i << "]" << std::endl;
+    //     // Add a listening socket to the list
+    //     Socket* listenSock = new Socket;
+    //     listenSock->setPortFD((*it)->port);
+    //     // Add relevant serverblock to listening socket!
+    //     listenSock->setServerBlock(*it);
+    //     _listenSockets.push_back(listenSock);
+    //   	_listenSockets.back()->initListenSocket((*it)->port.c_str());
+    // 	_pfds[i].fd = _listenSockets.back()->getSocketFD();
+	//     _pfds[i].events = POLLIN | POLLOUT;
+	//     _fd_n++;
+    //     i++;
+    //     std::cout << std::endl;
+    // }// a faire a chat gpt
 
 Server::~Server() {
     delete[] _pfds;
