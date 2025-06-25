@@ -6,7 +6,7 @@
 /*   By: baptistevieilhescaze <baptistevieilhesc    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/21 15:27:27 by baptistevie       #+#    #+#             */
-/*   Updated: 2025/06/25 14:02:33 by baptistevie      ###   ########.fr       */
+/*   Updated: 2025/06/25 18:20:55 by baptistevie      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <sstream>  // For std::istringstream and std::ostringstream (used in .cpp)
 #include <stdexcept> // For std::invalid_argument (used in .cpp)
 #include <cctype>   // For std::isdigit, std::tolower (used in .cpp)
+#include <algorithm> // For std::transform
 
 // The 'namespace' keyword is used to organize code into logical groups,
 // preventing name collisions between identifiers (like functions, classes, variables)
@@ -31,6 +32,9 @@ namespace StringUtils {
     void trim(std::string& s);
 
     void toLower(std::string& str);
+
+    // Case-insensitive string comparison.
+    bool ciCompare(const std::string& s1, const std::string& s2);
 
     // Splits a string into a vector of substrings based on a single character delimiter.
     // Empty tokens are included if two delimiters are adjacent (e.g., "a,,b" split by ',' yields {"a", "", "b"}).
@@ -49,6 +53,10 @@ namespace StringUtils {
     // - Does not handle overflow/underflow for extremely large numbers (beyond long limits in C++98).
     // Example: "123" -> 123L, "-45" -> -45L, "abc" -> throws
     long stringToLong(const std::string& str);
+
+    // Converts a long integer to a string.
+    // Example: 123L -> "123", -45L -> "-45"
+    std::string longToString(long val);
 
     bool startsWith(const std::string& str, const std::string& prefix);
 
