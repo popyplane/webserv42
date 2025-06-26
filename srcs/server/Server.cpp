@@ -17,7 +17,7 @@ Server::Server(GlobalConfig* config) {
         _listenSockets.push_back(listenSock);
       	_listenSockets.back()->initListenSocket((*it)->port.c_str());
     	_pfds[i].fd = _listenSockets.back()->getSocketFD();
-	    _pfds[i].events = POLLIN | POLLOUT;
+	    _pfds[i].events = POLLIN | POLLOUT/* | POLLHUP*/;
 	    _fd_n++;
         i++;
         std::cout << std::endl;
